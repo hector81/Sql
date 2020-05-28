@@ -1,0 +1,380 @@
+
+------------GENERAL-------------------------------------
+
+USE compras
+SELECT * FROM Articulos;
+
+SELECT preunart FROM Articulos;
+
+SELECT preunart AS 'aaaaa' FROM Articulos;
+
+
+------------ORDER BY-------------------------------------
+
+
+SELECT unilin, preunlin FROM Lineas ORDER BY 1 ASC, 2 DESC; 
+
+SELECT TOP 5 unilin, preunlin FROM Lineas ORDER BY 1 ASC, 2 DESC; 
+
+SELECT TOP 5 PERCENT unilin, preunlin FROM Lineas ORDER BY 1 ASC, 2 DESC; 
+
+
+------------DISTINCT-------------------------------------
+
+
+SELECT DISTINCT Apellido1 FROM empleados;
+
+
+------------AS-------------------------------------
+
+
+SELECT preunart AS 'aaaaa' FROM Articulos;
+
+SELECT t1.preunart  FROM Articulos AS t1;
+
+
+------------LIKE------------------------------------
+
+SELECT * FROM Customers
+WHERE City LIKE 's%'; 
+
+------------WILDCARD--------------------------------
+
+% 		A substitute for zero or more characters
+_ 		A substitute for a single character
+[charlist] 	Sets and ranges of characters to match
+[^charlist]
+[!charlist] 	Matches only a character NOT specified within the brackets
+
+
+The following SQL statement selects all customers with a City NOT starting with "b", "s", or "p":
+
+SELECT * FROM Customers
+WHERE City LIKE '[!bsp]%';
+
+or
+
+SELECT * FROM Customers
+WHERE City NOT LIKE '[bsp]%';
+
+The following SQL statement selects all customers with a City starting with "a", "b", or "c":
+
+SELECT * FROM Customers
+WHERE City LIKE '[a-c]%'; 
+
+
++++++++++++++++EJEMPLOS+++++++++++++++++++++++
+alter table cliente add
+constraint ck_dni (dni like '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][a-z]');
+++++++++++++++++++++++++++++++++++++++++++++++
+
+
+-------------TOP-------------------------------------
+
+SELECT TOP 25 codigo,nombres,telefono
+FROM Empleados
+ORDER BY Codigo DESC
+
+SELECT Top 10 percent codigo,nombres,telefono
+FROM Empleados
+ORDER BY Codigo DESC
+
+
+------------><=-------------------------------------
+
+
+SELECT preunart FROM Articulos WHERE preunart<1000;
+
+SELECT preunart FROM Articulos WHERE preunart>10;
+
+SELECT preunart FROM Articulos WHERE preunart>=10;
+
+SELECT preunart FROM Articulos WHERE preunart<=10;
+
+SELECT preunart FROM Articulos WHERE preunart<>100;
+
+
+------------AND / OR-------------------------------------
+
+
+SELECT preunart FROM Articulos WHERE preunart<>100 AND preunart<1000;
+
+SELECT preunart FROM Articulos WHERE preunart<>100 OR preunart<1000;
+
+
+------------NOT / BETWEEN-------------------------------------
+
+
+SELECT preunart FROM Articulos WHERE  preunart BETWEEN 100 AND 300;
+
+
+SELECT preunart FROM Articulos WHERE  preunart NOT BETWEEN 100 AND 300;
+
+
+------------NOT / IN-------------------------------------
+
+
+SELECT * FROM Proveedores WHERE localpro NOT IN ('Barcelona','Madrid');
+
+SELECT * FROM Proveedores WHERE localpro IN ('Barcelona','Madrid');
+
+
+------------NOT / LIKE-------------------------------------
+
+
+SELECT * FROM Proveedores WHERE localpro LIKE 'B%';
+
+SELECT * FROM Proveedores WHERE localpro LIKE 'B_l%';
+
+SELECT * FROM Proveedores WHERE localpro LIKE '[A-J]_l%';
+
+
+------------NOT / NULL-------------------------------------
+
+
+SELECT * FROM Proveedores WHERE emailpro IS NULL;
+
+SELECT * FROM Proveedores WHERE emailpro IS NOT NULL;
+
+
+------------SUBCONSULTAS-------------------------------------
+
+
+SELECT Nombre FROM Productos WHERE CodigoProducto IN (SELECT CodigoProducto FROM DetallePedidos WHERE Cantidad NOT IN (SELECT MAX (Cantidad) FROM DetallePedidos));
+
+
+------------COUNT-------------------------------------
+Nº de filas que componen el grupo.
+
+
+SELECT  COUNT(*),Pais FROM Clientes GROUP BY Pais;
+
+SELECT  COUNT(Ciudad) FROM Clientes WHERE Ciudad LIKE 'M%';
+
+SELECT  COUNT(*),CodigoEmpleadoRepVentas FROM Clientes GROUP BY CodigoEmpleadoRepVentas;
+
+SELECT  COUNT(*) FROM Clientes WHERE Ciudad LIKE 'Madrid';
+
+SELECT COUNT(DISTINCT CustomerID) AS NumberOfCustomers FROM Orders; 
+
+------------SUM-------------------------------------
+Suma de valores obtenidos con la expresión en cada fila.
+
+
+SELECT SUM(preunlin*unilin) FROM Lineas;
+
+
+------------MAX / MIN-------------------------------------
+Máximo/Mínimo
+
+SELECT MAX (Altura) FROM jugadores;
+
+SELECT MIN (Altura) FROM jugadores;
+
+
+------------AVG-------------------------------------
+Media.
+
+SELECT AVG (Peso) FROM jugadores;
+
+
+------------VAR-------------------------------------
+Varianza
+
+SELECT VAR (Peso) FROM jugadores;
+
+
+------------STDEV-------------------------------------
+Desviación típica
+
+SELECT STDEV (Peso) FROM jugadores;
+
+
+------------DATEPART-------------------------------------
+
+
+SELECT FechaPedido FROM Pedidos WHERE DATEPART(yyyy,FechaPedido)=2008;
+
+SELECT DATEPART(yyyy,FechaPedido) FROM Pedidos;
+
+
+------------DAY-------------------------------------
+
+
+SELECT DAY(FechaPedido) FROM Pedidos;
+
+
+
+------------MONTH-------------------------------------
+
+
+
+SELECT MONTH(FechaPedido) FROM Pedidos;
+
+
+------------YEAR-------------------------------------
+
+
+SELECT YEAR(FechaPedido) FROM Pedidos;
+
+
+------------DATEPART-------------------------------------
+
+
+SELECT DATEPART(yy, FechaPedido) FROM Pedidos;
+
+year, yyyy, yy
+	
+
+quarter, qq, q
+
+
+month, mm, m
+	
+
+dayofyear, dy, y
+	
+
+day, dd, d
+	
+
+week, wk, ww
+	
+
+weekday, dw
+	
+
+hour, hh
+	
+
+minute, n
+	
+
+second, ss, s
+	
+
+millisecond, ms
+	
+
+microsecond, mcs
+	
+
+nanosecond, ns
+	
+
+TZoffset, tz 
+
+
+------------GROUP BY-------------------------------------
+
+
+SELECT Gama, AVG(CantidadEnStock) FROM Productos GROUP BY Gama;
+
+
+------------HAVING-------------------------------------
+
+
+USE AdventureWorks2012 ;
+GO
+SELECT SalesOrderID, SUM(LineTotal) AS SubTotal
+FROM Sales.SalesOrderDetail
+GROUP BY SalesOrderID
+HAVING SUM(LineTotal) > 100000.00
+ORDER BY SalesOrderID ;
+
+
+------------EXISTS-------------------------------------
+
+
+USE AdventureWorks2012 ;
+GO
+SELECT DepartmentID, Name 
+FROM HumanResources.Department 
+WHERE EXISTS (SELECT NULL)
+ORDER BY Name ASC ;
+
+
+USE AdventureWorks2012 ;
+GO
+SELECT a.FirstName, a.LastName
+FROM Person.Person AS a
+WHERE EXISTS
+(SELECT * 
+    FROM HumanResources.Employee AS b
+    WHERE a.BusinessEntityID = b.BusinessEntityID
+    AND a.LastName = 'Johnson');
+GO
+
+------------NOT EXISTS-------------------------------------
+
+SELECT p.FirstName, p.LastName, e.JobTitle
+FROM Person.Person AS p 
+JOIN HumanResources.Employee AS e
+   ON e.BusinessEntityID = p.BusinessEntityID 
+WHERE NOT EXISTS
+(SELECT *
+   FROM HumanResources.Department AS d
+   JOIN HumanResources.EmployeeDepartmentHistory AS edh
+      ON d.DepartmentID = edh.DepartmentID
+   WHERE e.BusinessEntityID = edh.BusinessEntityID
+   AND d.Name LIKE 'P%')
+ORDER BY LastName, FirstName
+GO
+
+------------MULTITABLA INNER JOIN-------------------------------------
+
+
+SELECT DISTINCT Proveedores.codigpro, nombrpro, direcpro, localpro FROM Proveedores INNER JOIN Pedidos ON Proveedores.codigpro = Pedidos.codigpro; 
+
+
+
+------------MULTITABLA-------------------------------------
+
+
+SELECT DISTINCT Proveedores.codigpro, Proveedores.nombrpro, Pedidos.fechaped FROM Proveedores, Pedidos WHERE Proveedores.codigpro = Pedidos.codigpro; 
+
+
+------------LEFT JOINT-------------------------------------
+
+
+SELECT DISTINCT Proveedores.codigpro, nombrpro, direcpro, localpro FROM Proveedores LEFT JOIN Pedidos ON Proveedores.codigpro = Pedidos.codigpro; 
+
+
+
+------------RIGHT JOINT-------------------------------------
+
+
+
+SELECT DISTINCT Proveedores.codigpro, nombrpro, direcpro, localpro FROM Proveedores RIGHT JOIN Pedidos ON Proveedores.codigpro = Pedidos.codigpro; 
+
+
+
+------------UNION-------------------------------------
+
+
+SELECT codigpro, nombrpro, localpro FROM Proveedores
+UNION
+SELECT codigp, nombrp, localp FROM Proveedores_Anulados
+ORDER BY 1
+
+
+------------INTERSECT-------------------------------------
+
+
+SELECT codigcli, nombrcli, localcli FROM clientes
+INTERSECT
+SELECT codigpro, nombrpro, localpro FROM Proveedores;
+
+
+------------EXCEPT-------------------------------------
+
+
+SELECT codigcli, nombrcli, localcli FROM clientes
+EXCEPT
+SELECT codigpro, nombrpro, localpro FROM Proveedores;
+
+
+
+
+
+

@@ -1,0 +1,140 @@
+Ejercicios 13 y 14 de procedimientos
+Ejercicio 13
+
+USE compras;
+
+go
+
+CREATE PROCEDURE dbo.USP_AGREGARPEDIDO
+
+ -- PARÁMETROS DE PEDIDOS
+
+ @IDPED INT,
+
+ @FECPED DATE,
+
+@IDprov CHAR(4),
+
+@IVA decimal(4,1),
+
+@FECENT DATE,
+
+-- PARÁMETROS DE Líneas
+
+ @IDlin smallint,
+
+@IDart char(6),
+
+@numuni decimal(6,0),
+
+@PREunlin DECIMAL(9,2),
+
+@DEScunlin DECIMAL(4,1)
+
+  AS
+
+-- INICIO DE LA TRANSACCION
+
+BEGIN TRAN TPEDIDO
+
+ -- INICIO DEL CONTROL DE ERRORES
+
+ BEGIN TRY
+
+ -- AGREGANDO UN REGISTRO A PEDIDOS
+
+INSERT INTO dbo.PEDIDOS(numped,fechaped,codigpro,ivaped,fentrped) VALUES(@IDPED,@FECPED,@IDprov,@IVA, @FECENT)
+
+ -- AGREGANDO UN REGISTRO A líneas
+
+ INSERT INTO dbo.Lineas(numped,numlin,codigart,unilin,preunlin,desculin)VALUES(@IDPED, @IDlin,@IDart,@numuni,@PREunlin, @DEScunlin)
+
+ 
+
+-- DESCONTANDO EL STOCK DE PRODUCTOS
+
+-- hay una restricción que el stock de artículos debe ser >=0
+
+ UPDATE dbo.Articulos SET stockart -=@numuni WHERE codigart = @IDart
+
+ -- CONFIRMANDO LA ACTUALIZACION
+
+COMMIT TRAN TPEDIDO
+
+PRINT 'PEDIDO REGISTRADO'
+
+ END TRY
+
+BEGIN CATCH
+
+PRINT @@ERROR
+
+ROLLBACK TRAN TPEDIDO
+
+END CATCH
+
+GO
+
+EJERCICIO 14
+
+Use banco;
+
+go
+
+CREATE PROCEDURE USP_genera_mov
+
+@num_mov int as
+
+DECLARE @CUENTA INT, @IDCLI INT,@dnicli int,  @CANTIDAD int, @M INT, @NUM_CUENTA INT,@ID_MOV int
+
+SELECT TOP 1 @ID_MOV= id_movimiento from movimiento order by id_movimiento DESC
+
+SET @ID_MOV=@ID_MOV+1
+
+SET @M=1;
+
+WHILE @M<=@num_mov
+
+begin
+
+    While @dnicli is null
+
+       begin
+
+             SET @idcli=Floor(rand()*200+1);
+
+             SET @CANTIDAD=(RAND()*100000);
+
+             SELECT @dnicli=dni FROM cliente where codigo_cliente=@idcli;
+
+       end
+
+       WHILE @NUM_CUENTA is null
+
+       begin
+
+             SET @CUENTA= FLOOR(1+(RAND()*8))
+
+             SELECT @NUM_CUENTA=cod_cuenta FROM tiene where cod_cuenta=@CUENTA and dni=@dnicli
+
+       end
+
+       INSERT INTO movimiento VALUES (getdate(),@CANTIDAD,@dnicli,@CUENTA,@ID_MOV)
+
+ 
+
+-- AQUi @ROWCOUNT ME DARÁ 0 SI NO HA PODIDO INSERTAR EL REGISTRO
+
+       SET @M=@M+@@ROWCOUNT
+
+       SET @ID_MOV=@ID_MOV+1
+
+       SET @dnicli = NULL
+
+       SET @NUM_CUENTA = NULL
+
+    
+
+end
+
+go
